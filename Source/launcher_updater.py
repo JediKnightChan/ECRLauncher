@@ -4,10 +4,16 @@ import zipfile
 
 from ecr_logging import log
 from detached_process_launcher import run_detached_process
+from system_utils import rerun_as_windows_admin, is_windows_admin
 
 if __name__ == '__main__':
     log_dst = "launcher_update_log.txt"
     do_print = True
+
+    if os.name == "nt":
+        # Require admin rights
+        if not is_windows_admin():
+            rerun_as_windows_admin()
 
     log("Launcher update queued...", filename=log_dst, do_print=do_print)
 

@@ -12,14 +12,7 @@ import ctypes
 from gui_main import MainWindowComponent
 from logic_supervisor import LogicSupervisor
 from ecr_logging import log
-
-
-def is_windows_admin():
-    try:
-        return ctypes.windll.shell32.IsUserAnAdmin()
-    except:
-        return False
-
+from system_utils import is_windows_admin, rerun_as_windows_admin
 
 class Window(QMainWindow, MainWindowComponent):
     def __init__(self, logic_supervisor, parent=None):
@@ -113,8 +106,7 @@ if __name__ == "__main__":
     if os.name == "nt":
         # Require admin rights
         if not is_windows_admin():
-            ctypes.windll.shell32.ShellExecuteW(None, "runas", sys.executable, " ".join(sys.argv), None, 1)
-            sys.exit(0)
+            rerun_as_windows_admin()
 
     # os.environ.setdefault("QT_DEBUG_PLUGINS", "1")
     logic_supervisor_main = LogicSupervisor()
