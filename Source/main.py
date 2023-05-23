@@ -7,10 +7,18 @@ from PyQt6.QtWidgets import (
 from PyQt6 import QtCore, QtGui
 
 import webbrowser
+import ctypes
 
 from gui_main import MainWindowComponent
 from logic_supervisor import LogicSupervisor
 from ecr_logging import log
+
+
+def is_windows_admin():
+    try:
+        return ctypes.windll.shell32.IsUserAnAdmin()
+    except:
+        return False
 
 
 class Window(QMainWindow, MainWindowComponent):
@@ -30,7 +38,6 @@ class Window(QMainWindow, MainWindowComponent):
 
         if os.name == "nt":
             # Workaround for icon not shown on taskbar
-            import ctypes
             myappid = 'jediknightchannel.ecr.launcher.1'  # arbitrary string
             ctypes.windll.shell32.SetCurrentProcessExplicitAppUserModelID(myappid)
 
@@ -103,6 +110,12 @@ class Window(QMainWindow, MainWindowComponent):
 
 
 if __name__ == "__main__":
+    if os.name == "nt":
+        # Require admin rights
+        if not is_windows_admin():
+            ctypes.windll.shell32.ShellExecuteW(None, "runas", sys.executable, " ".join(sys.argv), None, 1)
+            sys.exit(0)
+
     # os.environ.setdefault("QT_DEBUG_PLUGINS", "1")
     logic_supervisor_main = LogicSupervisor()
 
