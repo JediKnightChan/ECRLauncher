@@ -3,4 +3,5 @@ Build/
 Dist/
 .idea/
 __pycache__/
-*log*
+log.txt
+launcher_update_log.txt
