@@ -1,0 +1,6 @@
+*.spec
+Build/
+Dist/
+.idea/
+__pycache__/
+*log*

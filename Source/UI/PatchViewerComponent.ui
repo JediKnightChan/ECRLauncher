@@ -1,0 +1,183 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>Form</class>
+ <widget class="QWidget" name="Form">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>960</width>
+    <height>540</height>
+   </rect>
+  </property>
+  <property name="minimumSize">
+   <size>
+    <width>960</width>
+    <height>540</height>
+   </size>
+  </property>
+  <property name="maximumSize">
+   <size>
+    <width>960</width>
+    <height>540</height>
+   </size>
+  </property>
+  <property name="windowTitle">
+   <string>Form</string>
+  </property>
+  <widget class="QLabel" name="Background">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>0</y>
+     <width>960</width>
+     <height>540</height>
+    </rect>
+   </property>
+   <property name="styleSheet">
+    <string notr="true">background-color: rgba(0, 0, 0, 225);</string>
+   </property>
+   <property name="text">
+    <string/>
+   </property>
+  </widget>
+  <widget class="QScrollArea" name="scrollArea">
+   <property name="geometry">
+    <rect>
+     <x>30</x>
+     <y>50</y>
+     <width>900</width>
+     <height>440</height>
+    </rect>
+   </property>
+   <property name="styleSheet">
+    <string notr="true">QScrollArea { background: transparent; border: 0; }
+QScrollArea &gt; QWidget &gt; QWidget { background: transparent; }
+
+QScrollBar:vertical {
+    width: 4px;
+    margin: 0px 0px 0px 0px;
+}
+
+QScrollBar::handle:vertical {
+    min-height: 0px;
+    border-radius: 2px;
+    background: white;
+}
+
+QScrollBar::add-line:vertical {
+    height: 0px;
+    subcontrol-position: bottom;
+    subcontrol-origin: margin;
+}
+
+QScrollBar::sub-line:vertical {
+    height: 0px;
+    subcontrol-position: top;
+    subcontrol-origin: margin;
+}</string>
+   </property>
+   <property name="widgetResizable">
+    <bool>true</bool>
+   </property>
+   <widget class="QWidget" name="scrollAreaWidgetContents">
+    <property name="geometry">
+     <rect>
+      <x>0</x>
+      <y>0</y>
+      <width>900</width>
+      <height>440</height>
+     </rect>
+    </property>
+    <layout class="QVBoxLayout" name="verticalLayout">
+     <property name="spacing">
+      <number>50</number>
+     </property>
+     <property name="leftMargin">
+      <number>0</number>
+     </property>
+     <property name="topMargin">
+      <number>0</number>
+     </property>
+     <property name="rightMargin">
+      <number>30</number>
+     </property>
+     <property name="bottomMargin">
+      <number>0</number>
+     </property>
+     <item>
+      <widget class="QLabel" name="label_4">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
+       <property name="font">
+        <font>
+         <family>Play</family>
+         <pointsize>16</pointsize>
+         <weight>75</weight>
+         <bold>true</bold>
+        </font>
+       </property>
+       <property name="styleSheet">
+        <string notr="true">color: rgb(255, 255, 255);</string>
+       </property>
+       <property name="text">
+        <string>PATCH 1.1</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QLabel" name="label">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
+       <property name="font">
+        <font>
+         <family>Calibri</family>
+        </font>
+       </property>
+       <property name="styleSheet">
+        <string notr="true">color: rgb(255, 255, 255);</string>
+       </property>
+       <property name="text">
+        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Lorem &lt;a href=&quot;https://www.yandex.ru&quot;&gt;&lt;span style=&quot; text-decoration: underline; color:#0000ff;&quot;&gt;ipsum&lt;/span&gt;&lt;/a&gt; dolor sit amet, consectetur adipiscing elit. Fusce vestibulum magna eu congue imperdiet. Fusce vitae sem at tellus ornare mattis et eget ipsum. Nunc interdum quis dui id fringilla. Aenean quis vulputate nunc. Sed vitae euismod ante. Praesent ac lorem ac diam tempor fermentum nec et enim. Maecenas in tempor ante. Aliquam tempor mattis dolor, quis porta turpis ultrices eget. Nulla sed lorem vitae lectus molestie hendrerit. Donec convallis est tristique, luctus nisi non, euismod ipsum. Nam neque ligula, ullamcorper eu lobortis id, sollicitudin ut velit. Vestibulum viverra a leo quis tempor. Fusce vitae velit quis dolor porta cursus.&lt;/p&gt;&lt;p&gt;Etiam cursus molestie erat, ut pulvinar ante efficitur varius. Proin blandit feugiat est, quis pharetra libero convallis quis. Suspendisse in gravida risus. Quisque eget lorem at purus blandit luctus. Etiam mollis ante ut tempor pulvinar. Ut vulputate orci odio, sed feugiat augue venenatis rhoncus. Vivamus faucibus tellus malesuada, iaculis lorem in, gravida arcu. Aliquam vitae nisl ipsum. Cras tempor lacinia porta. Sed sed suscipit orci, ac faucibus quam. Integer pharetra volutpat ipsum dapibus rutrum. Fusce tellus arcu, auctor elementum augue id, laoreet fringilla lectus. Nulla vitae diam vitae lorem ultricies hendrerit.&lt;/p&gt;&lt;p&gt;Nam eget orci felis. Vestibulum mauris magna, tristique ut cursus sit amet, interdum ornare ante. Curabitur tempor, libero sed feugiat lobortis, erat lectus maximus dolor, a tempor ipsum est vel dolor. Praesent at ex efficitur turpis ultrices rutrum. Nunc blandit a massa id eleifend. Donec sit amet gravida urna. Pellentesque ut facilisis metus.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+       </property>
+       <property name="wordWrap">
+        <bool>true</bool>
+       </property>
+      </widget>
+     </item>
+    </layout>
+   </widget>
+  </widget>
+  <widget class="QLabel" name="CloseButton">
+   <property name="geometry">
+    <rect>
+     <x>914</x>
+     <y>19</y>
+     <width>21</width>
+     <height>21</height>
+    </rect>
+   </property>
+   <property name="cursor">
+    <cursorShape>PointingHandCursor</cursorShape>
+   </property>
+   <property name="text">
+    <string/>
+   </property>
+   <property name="pixmap">
+    <pixmap resource="../Assets/resources.qrc">:/Common/ButtonClosePatch.png</pixmap>
+   </property>
+  </widget>
+ </widget>
+ <resources>
+  <include location="../Assets/resources.qrc"/>
+ </resources>
+ <connections/>
+</ui>

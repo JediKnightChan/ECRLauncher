@@ -1,0 +1,10 @@
+certifi==2023.5.7
+charset-normalizer==3.1.0
+idna==3.4
+numpy==1.24.3
+Pillow==9.5.0
+PyQt6==6.5.0
+PyQt6-Qt6==6.5.0
+PyQt6-sip==13.5.1
+requests==2.30.0
+urllib3==2.0.2

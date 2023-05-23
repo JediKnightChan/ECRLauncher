@@ -1,0 +1,30 @@
+<RCC>
+  <qresource prefix="Common">
+    <file>ECR_icon.ico</file>
+    <file>NewsMask.png</file>
+    <file>NewsFrame.png</file>
+    <file>ButtonPlayInactive.png</file>
+    <file>ButtonPlayActive.png</file>
+    <file>ButtonMinimize.png</file>
+    <file>ButtonExit.png</file>
+    <file>ButtonClosePatch.png</file>
+    <file>ButtonRight.png</file>
+    <file>ButtonLeft.png</file>
+    <file>Play-Bold.ttf</file>
+    <file>PlayRegular-Regular.ttf</file>
+    <file>Logo.png</file>
+    <file>Background.png</file>
+  </qresource>
+  <qresource prefix="Hovered">
+    <file>ButtonRightHovered.png</file>
+    <file>ButtonPlayHovered.png</file>
+    <file>ButtonMinimizeHovered.png</file>
+    <file>ButtonLeftHovered.png</file>
+    <file>ButtonExitHovered.png</file>
+    <file>ButtonClosePatchHovered.png</file>
+  </qresource>
+  <qresource prefix="Temp">
+    <file>ContentTileTemp2.png</file>
+    <file>ContentTileTemp.png</file>
+  </qresource>
+</RCC>
