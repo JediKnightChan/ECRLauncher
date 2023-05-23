@@ -1,6 +1,7 @@
 *.spec
 Build/
 Dist/
+Output/
 .idea/
 __pycache__/
 log.txt
