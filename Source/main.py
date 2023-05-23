@@ -26,7 +26,7 @@ class Window(QMainWindow, MainWindowComponent):
 
         self.setup_ui(self)
         self.setWindowFlags(QtCore.Qt.WindowType.FramelessWindowHint | QtCore.Qt.WindowType.WindowTitleHint)
-        self.setWindowIcon(QtGui.QIcon(':/Common/Icon.png'))
+        self.setWindowIcon(QtGui.QIcon(':/Common/ECR_icon.ico'))
 
     # Events, properties and signals
 
