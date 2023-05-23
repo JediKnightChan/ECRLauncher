@@ -28,6 +28,12 @@ class Window(QMainWindow, MainWindowComponent):
         self.setWindowFlags(QtCore.Qt.WindowType.FramelessWindowHint | QtCore.Qt.WindowType.WindowTitleHint)
         self.setWindowIcon(QtGui.QIcon(':/Common/ECR_icon.ico'))
 
+        if os.name == "nt":
+            # Workaround for icon not shown on taskbar
+            import ctypes
+            myappid = 'jediknightchannel.ecr.launcher.1'  # arbitrary string
+            ctypes.windll.shell32.SetCurrentProcessExplicitAppUserModelID(myappid)
+
     # Events, properties and signals
 
     def on_news_label_clicked(self):
