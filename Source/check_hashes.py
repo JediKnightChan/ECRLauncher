@@ -2,7 +2,8 @@ import os.path
 from logic_supervisor import md5
 import json
 
-root_root_dir = "C:/Users/JediKnight/Documents/Unreal Projects/ECRPackagedShipping/prod_1.0.0/"
+tag = "dev_1.0.0"
+root_root_dir = f"C:/Users/JediKnight/Documents/Unreal Projects/ECRPackagedShipping/{tag}/"
 game_dir = os.path.join(root_root_dir, "Windows")
 archive = os.path.join(root_root_dir, root_root_dir.split("/")[-2] + ".zip")
 
@@ -10,9 +11,17 @@ if os.path.exists(archive):
     print("Archive", md5(archive))
 
 files = [
-    'ECR.exe',
-    'ECR/Binaries/Win64/ECR-Win64-Shipping.exe',
+    'ECR.exe'
 ]
+
+if tag.startswith("dev"):
+    files += [
+        'ECR/Binaries/Win64/ECR.exe'
+    ]
+elif tag.startswith("prod"):
+    files += [
+        'ECR/Binaries/Win64/ECR-Win64-Shipping.exe'
+    ]
 
 folders = [
     'ECR/Content/Paks/'

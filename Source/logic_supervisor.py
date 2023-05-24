@@ -2,17 +2,15 @@ import json
 import os
 import hashlib
 import shutil
-import subprocess
 import threading
 import time
-import shlex
 
 import requests
 import zipfile
 
 from PIL import Image
 from io import BytesIO
-from PyQt6.QtCore import pyqtSignal, QObject, QCoreApplication
+from PyQt6.QtCore import pyqtSignal, QObject
 
 from gdrive_downloader import download_file_from_google_drive
 from ecr_logging import log
@@ -38,7 +36,7 @@ class LogicSupervisor(QObject):
         super().__init__()
         self.api_root = "https://eternal-crusade.com/api/ecr/"
         self.game_platform = "Windows"
-        self.current_launcher_version = "1.0.0"
+        self.current_launcher_version = "1.0.1"
 
         self.__branch = None
         self.__game_version = None

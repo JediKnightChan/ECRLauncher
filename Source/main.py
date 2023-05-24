@@ -14,6 +14,7 @@ from logic_supervisor import LogicSupervisor
 from ecr_logging import log
 from system_utils import is_windows_admin, rerun_as_windows_admin
 
+
 class Window(QMainWindow, MainWindowComponent):
     def __init__(self, logic_supervisor, parent=None):
         super().__init__(parent)
