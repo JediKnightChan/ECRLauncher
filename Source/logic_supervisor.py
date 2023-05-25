@@ -13,7 +13,7 @@ from PIL import Image
 from io import BytesIO
 from PyQt6.QtCore import pyqtSignal, QObject
 
-from gdrive_downloader import download_file_from_google_drive, GoogleDriveError, get_public_link
+from git_downloader import download_file_from_git, GitError, get_public_link
 from ecr_logging import log
 from detached_process_launcher import run_detached_process
 
@@ -222,7 +222,7 @@ class LogicSupervisor(QObject):
                                                                   zip_destination)
         if not download_success:
             if status_code == 429:
-                self.open_internet_link(get_public_link(gdrive_id))
+                self.open_internet_link(get_public_link())
                 self.set_status(
                     "Failed downloading launcher update. Please, download launcher.zip manually and extract it to the launcher folder")
             else:
@@ -414,7 +414,7 @@ class LogicSupervisor(QObject):
                                                                       zip_destination)
             if not download_success:
                 if status_code == 429:
-                    self.open_internet_link(get_public_link(gdrive_id))
+                    self.open_internet_link(get_public_link())
                     self.set_status(
                         "Failed downloading game. Please, download game.zip manually, copy it into the launcher folder and restart")
                 else:
@@ -459,7 +459,7 @@ class LogicSupervisor(QObject):
             with open(zip_destination, "wb") as f:
                 f.write(b"")
 
-            for i, chunk_size in download_file_from_google_drive(gdrive_id, zip_destination):
+            for i, chunk_size in download_file_from_git(zip_destination):
                 if self.stop_requested:
                     return False, 0
                 downloaded = chunk_size * (i + 1)
@@ -483,7 +483,7 @@ class LogicSupervisor(QObject):
 
             self.set_progress(100)
             return True, 0
-        except GoogleDriveError as e:
+        except GitError as e:
             log(e)
             self.set_status_speed("")
             return False, e.status_code
