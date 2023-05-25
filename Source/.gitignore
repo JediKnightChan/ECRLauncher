@@ -7,3 +7,5 @@ settings.json
 *.log
 Windows/
 secret_game_utils.py
+credentials.json
+token.json

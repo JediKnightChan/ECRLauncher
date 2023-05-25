@@ -178,7 +178,7 @@ class MainWindowComponent:
         self.PlayButton.clicked.connect(self.on_play_clicked)
 
         self.PBU_Status = QtWidgets.QLabel(self.main_screen_widget)
-        self.PBU_Status.setGeometry(QtCore.QRect(10, 520, 500, 20))
+        self.PBU_Status.setGeometry(QtCore.QRect(10, 520, 700, 20))
         font = QtGui.QFont()
         font.setFamily("Play")
         font.setPointSize(8)

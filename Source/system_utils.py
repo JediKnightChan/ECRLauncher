@@ -1,6 +1,7 @@
 import ctypes
 import sys
 
+
 def is_windows_admin():
     try:
         return ctypes.windll.shell32.IsUserAnAdmin()

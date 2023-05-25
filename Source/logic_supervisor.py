@@ -4,6 +4,7 @@ import hashlib
 import shutil
 import threading
 import time
+import webbrowser
 
 import requests
 import zipfile
@@ -12,7 +13,7 @@ from PIL import Image
 from io import BytesIO
 from PyQt6.QtCore import pyqtSignal, QObject
 
-from gdrive_downloader import download_file_from_google_drive
+from gdrive_downloader import download_file_from_google_drive, GoogleDriveError, get_public_link
 from ecr_logging import log
 from detached_process_launcher import run_detached_process
 
@@ -171,6 +172,10 @@ class LogicSupervisor(QObject):
 
     # Functionality
 
+    @staticmethod
+    def open_internet_link(url):
+        webbrowser.open(url, new=2)
+
     def get_can_exit(self):
         can_exit = True
         for t in self.threads:
@@ -213,9 +218,15 @@ class LogicSupervisor(QObject):
 
         status_format_string = f"Downloading launcher update {latest_version}..." + \
                                " {remaining_gb:.2f} GB remaining"
-        download_success = self.download_gdrive_file(status_format_string, gdrive_id, size, zip_destination)
+        download_success, status_code = self.download_gdrive_file(status_format_string, gdrive_id, size,
+                                                                  zip_destination)
         if not download_success:
-            self.set_status("Error downloading launcher update... Please, contact support")
+            if status_code == 429:
+                self.open_internet_link(get_public_link(gdrive_id))
+                self.set_status(
+                    "Failed downloading launcher update. Please, download launcher.zip manually and extract it to the launcher folder")
+            else:
+                self.set_status("Error downloading launcher update... Please, contact support")
             return None
 
         return True
@@ -237,14 +248,14 @@ class LogicSupervisor(QObject):
             success = self.install_patch(version, version_data, i, patch_amount)
             if not success:
                 self.set_status(
-                    "Installing patch failed. Please, restart launcher, and if problem persists, contact support")
+                    "Installing patch failed. If problem persists after restart, delete settings.json and restart to reinstall whole game")
                 return
 
         # Check integrity
         game_broken = self.verify_game_version_hashes()
         if game_broken:
             self.set_status(
-                "Game integrity is violated. Please, restart launcher, and if problem persists, contact support")
+                "Game integrity is violated. Delete settings.json to reinstall whole game")
         else:
             self.set_status("")
             self.set_can_play(True)
@@ -264,7 +275,7 @@ class LogicSupervisor(QObject):
         status_format_string = f"Downloading patch {version} ({i + 1}/{patch_amount})..." + \
                                " {remaining_gb:.2f} GB remaining"
 
-        download_success = self.download_gdrive_file(status_format_string, gdrive_id, size, zip_destination)
+        download_success, _ = self.download_gdrive_file(status_format_string, gdrive_id, size, zip_destination)
         if not download_success:
             return False
 
@@ -383,22 +394,32 @@ class LogicSupervisor(QObject):
         complete_archive_hash = platform_data.get("hash", None)
 
         if version is None or gdrive_id is None or size is None:
-            self.set_status("Install failed. Please, restart launcher, and if problem persists, contact support")
+            log(f"Installing full game, got None in version {version}, gdrive {gdrive_id}, size {size}")
+            self.set_status("No internet connection...")
             return
 
         skip_downloading = False
         if os.path.exists(zip_destination):
-            if md5(zip_destination) == complete_archive_hash:
+            calculated_hash = md5(zip_destination)
+            if calculated_hash == complete_archive_hash:
+                log(f"Installing full game, found {zip_destination}, md5 {complete_archive_hash} matched")
                 skip_downloading = True
             else:
+                log(f"Installing full game, found {zip_destination}, md5 {calculated_hash} didn't match expected {complete_archive_hash}")
                 os.remove(zip_destination)
 
         if not skip_downloading:
             status_format_string = base_status_text + " {remaining_gb:.2f} GB remaining"
-            download_success = self.download_gdrive_file(status_format_string, gdrive_id, size, zip_destination)
+            download_success, status_code = self.download_gdrive_file(status_format_string, gdrive_id, size,
+                                                                      zip_destination)
             if not download_success:
-                self.set_status(
-                    "Failed downloading game. Please, restart launcher, and if problem persists, contact support")
+                if status_code == 429:
+                    self.open_internet_link(get_public_link(gdrive_id))
+                    self.set_status(
+                        "Failed downloading game. Please, download game.zip manually, copy it into the launcher folder and restart")
+                else:
+                    self.set_status(
+                        "Failed downloading game. Please, restart launcher, and if problem persists, contact support")
                 return
 
         self.set_status_speed("")
@@ -440,7 +461,7 @@ class LogicSupervisor(QObject):
 
             for i, chunk_size in download_file_from_google_drive(gdrive_id, zip_destination):
                 if self.stop_requested:
-                    return False
+                    return False, 0
                 downloaded = chunk_size * (i + 1)
                 progress_percent = downloaded / size * 100
                 remaining = max(size - downloaded, 0)
@@ -461,11 +482,15 @@ class LogicSupervisor(QObject):
                 self.set_progress(int(progress_percent))
 
             self.set_progress(100)
-            return True
+            return True, 0
+        except GoogleDriveError as e:
+            log(e)
+            self.set_status_speed("")
+            return False, e.status_code
         except Exception as e:
             log(e)
             self.set_status_speed("")
-            return False
+            return False, 1
 
     @staticmethod
     def run_detached_process(cmd):

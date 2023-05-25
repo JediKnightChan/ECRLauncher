@@ -1,6 +1,16 @@
 import requests
 
 
+class GoogleDriveError(Exception):
+    def __init__(self, status_code, *args):
+        super().__init__(*args)
+        self.status_code = status_code
+
+
+def get_public_link(gdrive_id):
+    return f"https://drive.google.com/file/d/{gdrive_id}/view?usp=share_link"
+
+
 def download_file_from_google_drive(file_id, destination, chunk_size=32768):
     url = "https://docs.google.com/uc?export=download"
 
@@ -9,7 +19,8 @@ def download_file_from_google_drive(file_id, destination, chunk_size=32768):
     response = session.get(url, params=params, stream=True)
 
     if response.status_code != 200:
-        raise ValueError(f"Downloading google drive file {file_id} failed, status {response.status_code}")
+        raise GoogleDriveError(response.status_code,
+                               f"Downloading google drive file {file_id} failed, status {response.status_code}")
 
     for i, chunk_size_ in save_response_content(response, destination, chunk_size):
         yield i, chunk_size_
@@ -32,7 +43,7 @@ def save_response_content(response, destination, chunk_size):
 
 
 if __name__ == '__main__':
-    file_id = '1253LPP6nfT-E0aEdEYaN75tirBv92xcT'
-    destination = '/home/jediknight/Documents/SmallPythons/ECLauncher/ecr/ecr.zip'
+    file_id = '1X5NtVseRWdsqItahMAwUBwneZhfWxEXA'
+    destination = '/home/jediknight/Documents/SmallPythons/ECLauncher/Source/ecr.zip'
     for i, chunk_size in download_file_from_google_drive(file_id, destination):
         print(i, chunk_size)

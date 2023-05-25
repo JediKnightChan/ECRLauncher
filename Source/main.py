@@ -1,13 +1,11 @@
 import os
 import sys
+import ctypes
 
 from PyQt6.QtWidgets import (
     QApplication, QMainWindow
 )
 from PyQt6 import QtCore, QtGui
-
-import webbrowser
-import ctypes
 
 from gui_main import MainWindowComponent
 from logic_supervisor import LogicSupervisor
@@ -39,11 +37,11 @@ class Window(QMainWindow, MainWindowComponent):
 
     def on_news_label_clicked(self):
         if self.logic_supervisor.site_link:
-            webbrowser.open(self.logic_supervisor.site_link, new=2)
+            self.logic_supervisor.open_internet_link(self.logic_supervisor.site_link)
 
     def on_discord_clicked(self):
         if self.logic_supervisor.discord_link:
-            webbrowser.open(self.logic_supervisor.discord_link, new=2)
+            self.logic_supervisor.open_internet_link(self.logic_supervisor.discord_link)
 
     def on_close_clicked(self):
         if not self.logic_supervisor.get_can_exit():

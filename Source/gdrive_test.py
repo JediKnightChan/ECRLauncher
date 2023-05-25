@@ -1,7 +1,9 @@
 from __future__ import print_function
 
 import os.path
+import io
 
+from apiclient.http import MediaFileUpload, MediaIoBaseDownload
 from google.auth.transport.requests import Request
 from google.oauth2.credentials import Credentials
 from google_auth_oauthlib.flow import InstalledAppFlow
@@ -9,7 +11,9 @@ from googleapiclient.discovery import build
 from googleapiclient.errors import HttpError
 
 # If modifying these scopes, delete the file token.json.
-SCOPES = ['https://www.googleapis.com/auth/drive.metadata.readonly']
+SCOPES = [
+    'https://www.googleapis.com/auth/drive.readonly',
+]
 
 
 def main():
@@ -35,19 +39,18 @@ def main():
             token.write(creds.to_json())
 
     try:
-        service = build('drive', 'v3', credentials=creds)
+        drive = build('drive', 'v3', credentials=creds)
 
-        # Call the Drive v3 API
-        results = service.files().list(
-            pageSize=10, fields="nextPageToken, files(id, name)").execute()
-        items = results.get('files', [])
+        gdrive_id = "1X5NtVseRWdsqItahMAwUBwneZhfWxEXA"
+        request = drive.files().get_media(fileId=gdrive_id)
 
-        if not items:
-            print('No files found.')
-            return
-        print('Files:')
-        for item in items:
-            print(u'{0} ({1})'.format(item['name'], item['id']))
+        with open("ecr.zip", "wb") as fh:
+            downloader = MediaIoBaseDownload(fh, request, 32768)
+            done = False
+            while done is False:
+                status, done = downloader.next_chunk()
+                print(int(status.progress() * 100))
+
     except HttpError as error:
         # TODO(developer) - Handle errors from drive API.
         print(f'An error occurred: {error}')
