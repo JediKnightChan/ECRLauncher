@@ -34,7 +34,7 @@ class LogicSupervisor(QObject):
 
     def __init__(self):
         super().__init__()
-        self.api_root = "https://eternal-crusade.com/api/ecr/"
+        self.api_root = "https://ecr-service.website.yandexcloud.net/api/ecr/"
         self.game_platform = "Windows"
         self.current_launcher_version = "1.0.1"
 
@@ -73,10 +73,11 @@ class LogicSupervisor(QObject):
         news_handled = []
         for raw_el in news_raw:
             image = raw_el["image"]
+            image = self.api_root + image
             if image.startswith("https://") or image.startswith("http://"):
                 r = requests.get(image)
                 if not r.status_code == 200:
-                    log("Couldn't load image", image, r.status_code)
+                    log(f"Couldn't load image {image}, {r.status_code}")
                     continue
                 img = Image.open(BytesIO(r.content))
                 raw_el["image"] = img
