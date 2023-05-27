@@ -13,7 +13,8 @@ from PIL import Image
 from io import BytesIO
 from PyQt6.QtCore import pyqtSignal, QObject
 
-from git_downloader import download_file_from_git, GitError, get_public_link
+from git_downloader import download_file_from_git, GitError
+from gdrive_downloader import get_public_gdrive_link
 from ecr_logging import log
 from detached_process_launcher import run_detached_process
 
@@ -203,6 +204,7 @@ class LogicSupervisor(QObject):
 
         platform_data = launcher_data.get("complete_archives", {}).get(self.game_platform, {})
         gdrive_id = platform_data.get("gdrive_id", None)
+        github_chunk_urls = platform_data.get("github_chunk_urls", [])
         size = platform_data.get("size", None)
         real_hash = platform_data.get("hash", "")
 
@@ -218,11 +220,11 @@ class LogicSupervisor(QObject):
 
         status_format_string = f"Downloading launcher update {latest_version}..." + \
                                " {remaining_gb:.2f} GB remaining"
-        download_success, status_code = self.download_gdrive_file(status_format_string, gdrive_id, size,
-                                                                  zip_destination)
+        download_success, status_code = self.download_github_release(status_format_string, github_chunk_urls, size,
+                                                                     zip_destination)
         if not download_success:
             if status_code == 429:
-                self.open_internet_link(get_public_link())
+                self.open_internet_link(get_public_gdrive_link(gdrive_id))
                 self.set_status(
                     "Failed downloading launcher update. Please, download launcher.zip manually and extract it to the launcher folder")
             else:
@@ -263,6 +265,7 @@ class LogicSupervisor(QObject):
     def install_patch(self, version, version_data, i, patch_amount):
         platform_data = version_data.get(self.game_platform, {})
         gdrive_id = platform_data.get("gdrive_id", None)
+        github_chunk_urls = platform_data.get("github_chunk_urls", [])
         size = platform_data.get("size", None)
 
         if not gdrive_id or not size:
@@ -275,7 +278,8 @@ class LogicSupervisor(QObject):
         status_format_string = f"Downloading patch {version} ({i + 1}/{patch_amount})..." + \
                                " {remaining_gb:.2f} GB remaining"
 
-        download_success, _ = self.download_gdrive_file(status_format_string, gdrive_id, size, zip_destination)
+        download_success, _ = self.download_github_release(status_format_string, github_chunk_urls, size,
+                                                           zip_destination)
         if not download_success:
             return False
 
@@ -390,6 +394,7 @@ class LogicSupervisor(QObject):
         version = data.get("version", None)
         platform_data = data.get("complete_archives", {}).get(self.game_platform, {})
         gdrive_id = platform_data.get("gdrive_id", None)
+        github_chunk_urls = platform_data.get("github_chunk_urls", [])
         size = platform_data.get("size", None)
         complete_archive_hash = platform_data.get("hash", None)
 
@@ -410,11 +415,11 @@ class LogicSupervisor(QObject):
 
         if not skip_downloading:
             status_format_string = base_status_text + " {remaining_gb:.2f} GB remaining"
-            download_success, status_code = self.download_gdrive_file(status_format_string, gdrive_id, size,
-                                                                      zip_destination)
+            download_success, status_code = self.download_github_release(status_format_string, github_chunk_urls, size,
+                                                                         zip_destination)
             if not download_success:
                 if status_code == 429:
-                    self.open_internet_link(get_public_link())
+                    self.open_internet_link(get_public_gdrive_link(gdrive_id))
                     self.set_status(
                         "Failed downloading game. Please, download game.zip manually, copy it into the launcher folder and restart")
                 else:
@@ -448,7 +453,7 @@ class LogicSupervisor(QObject):
             self.set_status("")
             self.set_can_play(True)
 
-    def download_gdrive_file(self, status_format_string, gdrive_id, size, zip_destination):
+    def download_github_release(self, status_format_string, release_chunks_urls, size, zip_destination):
         self.set_progress(0)
 
         n_seconds = 10
@@ -459,27 +464,30 @@ class LogicSupervisor(QObject):
             with open(zip_destination, "wb") as f:
                 f.write(b"")
 
-            for i, chunk_size in download_file_from_git(zip_destination):
-                if self.stop_requested:
-                    return False, 0
-                downloaded = chunk_size * (i + 1)
-                progress_percent = downloaded / size * 100
-                remaining = max(size - downloaded, 0)
-                gb = 1_000_000_000
+            downloaded = 0
+            for chunk_url in release_chunks_urls:
+                for i, chunk_size in download_file_from_git(chunk_url, zip_destination):
+                    if self.stop_requested:
+                        return False, 0
+                    downloaded += chunk_size
 
-                new_time = time.time()
-                if new_time - last_time <= n_seconds:
-                    if new_time - last_time != 0:
-                        downloaded_this_n_seconds += chunk_size
-                        speed_mb = downloaded_this_n_seconds / (new_time - last_time) / 1_000_000
-                        self.set_status_speed(f"{int(speed_mb)} MB/s")
-                else:
-                    downloaded_this_n_seconds = chunk_size
-                    last_time = new_time
-                    self.set_status_speed(f"0 MB/s")
+                    progress_percent = downloaded / size * 100
+                    remaining = max(size - downloaded, 0)
+                    gb = 1_000_000_000
 
-                self.set_status(status_format_string.format(remaining_gb=remaining / gb))
-                self.set_progress(int(progress_percent))
+                    new_time = time.time()
+                    if new_time - last_time <= n_seconds:
+                        if new_time - last_time != 0:
+                            downloaded_this_n_seconds += chunk_size
+                            speed_mb = downloaded_this_n_seconds / (new_time - last_time) / 1_000_000
+                            self.set_status_speed(f"{int(speed_mb)} MB/s")
+                    else:
+                        downloaded_this_n_seconds = chunk_size
+                        last_time = new_time
+                        self.set_status_speed(f"0 MB/s")
+
+                    self.set_status(status_format_string.format(remaining_gb=remaining / gb))
+                    self.set_progress(int(progress_percent))
 
             self.set_progress(100)
             return True, 0

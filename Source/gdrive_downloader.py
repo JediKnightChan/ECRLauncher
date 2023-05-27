@@ -7,7 +7,7 @@ class GoogleDriveError(Exception):
         self.status_code = status_code
 
 
-def get_public_link(gdrive_id):
+def get_public_gdrive_link(gdrive_id):
     return f"https://drive.google.com/file/d/{gdrive_id}/view?usp=share_link"
 
 
