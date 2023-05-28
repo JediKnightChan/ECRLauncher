@@ -38,14 +38,15 @@ def main():
         with open('token.json', 'w') as token:
             token.write(creds.to_json())
 
+    # Downloading public file from Google Drive
     try:
         drive = build('drive', 'v3', credentials=creds)
 
-        gdrive_id = "1X5NtVseRWdsqItahMAwUBwneZhfWxEXA"
+        gdrive_id = "16weH4UZGRAtBAJ_ef0GD1l9PV6lMTmxl"
         request = drive.files().get_media(fileId=gdrive_id)
 
         with open("ecr.zip", "wb") as fh:
-            downloader = MediaIoBaseDownload(fh, request, 32768)
+            downloader = MediaIoBaseDownload(fh, request, 1000000)
             done = False
             while done is False:
                 status, done = downloader.next_chunk()

@@ -38,7 +38,7 @@ class LogicSupervisor(QObject):
         super().__init__()
         self.api_root = "https://ecr-service.website.yandexcloud.net/api/ecr/"
         self.game_platform = "Windows"
-        self.current_launcher_version = "1.0.1"
+        self.current_launcher_version = "1.0.2"
 
         self.__branch = None
         self.__game_version = None
@@ -56,11 +56,17 @@ class LogicSupervisor(QObject):
     # API requests
 
     def __make_api_get_request(self, url, default_list=False):
+        r = None
         try:
             r = requests.get(url)
             result = r.json()
         except Exception as e:
             log(e)
+            if r:
+                preformatted_text = r.text.replace('\n', '\\n')
+                log(f"Received content after api request to {url}: {preformatted_text}")
+            else:
+                log(f"Couldn't make api request to {url}")
             if default_list:
                 result = []
             else:
@@ -193,7 +199,8 @@ class LogicSupervisor(QObject):
 
         if not latest_version:
             # No internet or corrupt server data
-            self.set_status("No Internet connection...")
+            log(f"Empty latest version: {latest_version}")
+            self.set_status("Couldn't connect to server... Try using VPN or contact support")
             return None
 
         if latest_version == self.current_launcher_version:
@@ -323,7 +330,8 @@ class LogicSupervisor(QObject):
         latest_game_version = self.get_latest_game_version()
         if not latest_game_version:
             # No internet or corrupt server data
-            self.set_status("No Internet connection...")
+            log(f"Empty latest game version: {latest_game_version}")
+            self.set_status("Couldn't connect to server... Try using VPN or contact support")
             return
 
         current_game_version = self.get_current_game_version()
@@ -335,7 +343,8 @@ class LogicSupervisor(QObject):
             versioning_data = self.get_versioning_data()
             if versioning_data == {}:
                 # No internet or corrupt server data
-                self.set_status("No Internet connection...")
+                log(f"Empty versioning data")
+                self.set_status("Couldn't connect to server... Try using VPN or contact support")
                 return
             if current_game_version not in versioning_data:
                 # Current version is not supported anymore, install from scratch
@@ -400,7 +409,7 @@ class LogicSupervisor(QObject):
 
         if version is None or gdrive_id is None or size is None:
             log(f"Installing full game, got None in version {version}, gdrive {gdrive_id}, size {size}")
-            self.set_status("No internet connection...")
+            self.set_status("Couldn't connect to server... Try using VPN or contact support")
             return
 
         skip_downloading = False
@@ -410,7 +419,8 @@ class LogicSupervisor(QObject):
                 log(f"Installing full game, found {zip_destination}, md5 {complete_archive_hash} matched")
                 skip_downloading = True
             else:
-                log(f"Installing full game, found {zip_destination}, md5 {calculated_hash} didn't match expected {complete_archive_hash}")
+                log(f"Installing full game, found {zip_destination}, md5 {calculated_hash} didn't match expected "
+                    f"{complete_archive_hash}")
                 os.remove(zip_destination)
 
         if not skip_downloading:

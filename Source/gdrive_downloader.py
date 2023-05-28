@@ -43,7 +43,7 @@ def save_response_content(response, destination, chunk_size):
 
 
 if __name__ == '__main__':
-    file_id = '1X5NtVseRWdsqItahMAwUBwneZhfWxEXA'
+    file_id = '16weH4UZGRAtBAJ_ef0GD1l9PV6lMTmxl'
     destination = '/home/jediknight/Documents/SmallPythons/ECLauncher/Source/ecr.zip'
     for i, chunk_size in download_file_from_google_drive(file_id, destination):
         print(i, chunk_size)

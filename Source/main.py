@@ -2,6 +2,7 @@ import os
 import sys
 import ctypes
 
+import pandas as pd
 from PyQt6.QtWidgets import (
     QApplication, QMainWindow
 )
